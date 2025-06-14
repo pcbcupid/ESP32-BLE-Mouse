@@ -60,7 +60,7 @@ static const uint8_t _hidReportDescriptor[] = {
   END_COLLECTION(0)          // END_COLLECTION
 };
 
-BleMouse::BleMouse(std::string deviceName, std::string deviceManufacturer, uint8_t batteryLevel) : 
+BleMouse::BleMouse(std::string deviceName, std::string deviceManufacturer, uint8_t batteryLevel) :
     _buttons(0),
     hid(0)
 {
@@ -140,7 +140,7 @@ void BleMouse::setBatteryLevel(uint8_t level) {
 
 void BleMouse::taskServer(void* pvParameter) {
   BleMouse* bleMouseInstance = (BleMouse *) pvParameter; //static_cast<BleMouse *>(pvParameter);
-  BLEDevice::init(bleMouseInstance->deviceName);
+  BLEDevice::init(bleMouseInstance->deviceName.c_str());
   BLEServer *pServer = BLEDevice::createServer();
   pServer->setCallbacks(bleMouseInstance->connectionStatus);
 
@@ -148,7 +148,7 @@ void BleMouse::taskServer(void* pvParameter) {
   bleMouseInstance->inputMouse = bleMouseInstance->hid->inputReport(0); // <-- input REPORTID from report map
   bleMouseInstance->connectionStatus->inputMouse = bleMouseInstance->inputMouse;
 
-  bleMouseInstance->hid->manufacturer()->setValue(bleMouseInstance->deviceManufacturer);
+  bleMouseInstance->hid->manufacturer()->setValue(String(bleMouseInstance->deviceManufacturer.c_str()));
 
   bleMouseInstance->hid->pnp(0x02, 0xe502, 0xa111, 0x0210);
   bleMouseInstance->hid->hidInfo(0x00,0x02);
